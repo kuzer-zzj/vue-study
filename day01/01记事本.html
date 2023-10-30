@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/index.css">
+    <title>记事本</title>
+</head>
+
+<body>
+    <section id="app">
+        <header class="header">
+            <h1>记事本</h1>
+            <input type="text" v-model="inputValue" placeholder="请输入内容" class="new-todo">
+            <button class="add" @click="add">添加</button>
+        </header>
+
+        <section class="main">
+            <ul class="todo-list">
+                <li class="todo" v-for="(item, index) in list" :key="index">
+                    <div class="view">
+                        <span class="index">{{index+1}}</span>
+                        <label for="">{{item.name}}</label>
+                        <button @click="del(item.id)" class="destroy"></button>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <!-- 统计和清空 -->
+        <footer class="footer" v-show="list.length >0">
+            <span class="todo-count"><strong>合计</strong> {{list.length}}</span>
+            <button class="clear-completed" @click="clear">清空</button>
+        </footer>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue(
+            {
+                el: '#app',
+                data: {
+                    inputValue: '',
+                    list: [
+                        { id: 1, name: '跑步一公里' },
+                        { id: 3, name: '游泳100米' },
+                    ]
+                },
+
+                methods: {
+                    add() {
+                        this.list.push({
+                            id: +new Date,
+                            name: this.inputValue
+                        })
+                        this.inputValue = ''
+                    },
+
+                    del(id) {    
+                        this.list = this.list.filter(item => item.id !== id)
+                    },
+
+                    clear() {
+                        this.list = []
+                    }
+                }
+            }
+        )
+    </script>
+</body>
+
+</html>
