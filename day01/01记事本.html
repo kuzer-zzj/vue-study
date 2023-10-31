@@ -12,7 +12,7 @@
     <section id="app">
         <header class="header">
             <h1>记事本</h1>
-            <input type="text" v-model="inputValue" placeholder="请输入内容" class="new-todo">
+            <input type="text" @keyup.enter="add" v-model.trim="inputValue" placeholder="请输入内容" class="new-todo">
             <button class="add" @click="add">添加</button>
         </header>
 
