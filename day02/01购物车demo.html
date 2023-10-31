@@ -43,7 +43,7 @@
                         <div class="td">{{item.price}}</div>
                         <div class="td">
                             <div class="my-input-number">
-                                <button class="decrease" :disabled ='item.num < 1' @click="sub(item.id)"> - </button>
+                                <button class="decrease" :disabled='item.num < 1' @click="sub(item.id)"> - </button>
                                 <span class="my-input__inner">{{item.num}}</span>
                                 <button class="increase" @click="sum(item.id)"> + </button>
                             </div>
@@ -57,14 +57,15 @@
             <div class="bottom">
                 <!-- 全选 -->
                 <label class="check-all">
-                    <input type="checkbox" />
+                    <input type="checkbox" v-model="isAll" />
                     全选
                 </label>
                 <div class="right-box">
                     <!-- 所有商品总价 -->
-                    <span class="price-box">总价&nbsp;&nbsp;:&nbsp;&nbsp;¥&nbsp;<span class="price">24</span></span>
+                    <span class="price-box">总价&nbsp;&nbsp;:&nbsp;&nbsp;¥&nbsp;<span
+                            class="price">{{totalPrice}}</span></span>
                     <!-- 结算按钮 -->
-                    <button class="pay">结算( 6 )</button>
+                    <button class="pay">结算( {{totalNum}} )</button>
                 </div>
             </div>
         </div>
@@ -73,11 +74,8 @@
     </div>
     <script src="./js/vue.js"></script>
     <script>
-        const app = new Vue({
-            el: '#app',
-            data: {
-                // 水果列表
-                fruitList: [
+
+        const defultFruitList =[
                     {
                         id: 1,
                         icon: './img/火龙果.png',
@@ -110,10 +108,16 @@
                         id: 5,
                         icon: './img/樱桃.png',
                         isChecked: false,
-                        num: 20,
+                        num: 220,
                         price: 34,
                     },
-                ],
+                ];
+        const app = new Vue({
+            el: '#app',
+            data: {
+
+                // 水果列表
+                fruitList: localStorage.getItem('fruitList') ? JSON.parse(localStorage.getItem('fruitList')) : defultFruitList,
             },
 
             methods: {
@@ -122,14 +126,58 @@
                     this.fruitList = this.fruitList.filter(item => item.id !== id)
                 },
 
-                sum(id){
-                    this.fruitList.find(item => item.id ===id).num++
+                sum(id) {
+                    this.fruitList.find(item => item.id === id).num++
                 },
-                sub(id){
-                    this.fruitList.find(item=> item.id ===id).num--
+                sub(id) {
+                    this.fruitList.find(item => item.id === id).num--
                 }
 
+            },
+
+            computed: {
+                isAll: {
+                    get() {
+                        console.log('获取列表是否全选')
+                        return this.fruitList.every(item => item.isChecked)
+                    },
+
+                    set(newValue) {
+                        console.log(newValue)
+                        this.fruitList.forEach(element => {
+                            element.isChecked = newValue
+                        });
+                    }
+                },
+                totalPrice: {
+                    get() {
+                        return this.fruitList.reduce((sum, item) => {
+                            if (item.isChecked) {
+                                return sum + item.price * item.num
+                            }
+                            return sum;
+                        }, 0)
+                    }
+                },
+                totalNum: {
+                    get(){
+                        return this.fruitList.filter(item =>item.isChecked).reduce((sum,item)=>{
+                            return sum+item.num
+                        },0)
+                    }
+                }
+            },
+
+            watch: {
+                fruitList: {
+                    deep: true,
+                    handler(newValue){
+                        console.log('监视到数据变化', newValue)
+                        localStorage.setItem('fruitList',JSON.stringify(newValue))
+                    }
+                }
             }
+            
         })
     </script>
 </body>
